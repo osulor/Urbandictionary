@@ -33,6 +33,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Sort by Most Thumbs: "
+        android:textStyle="bold"
         android:layout_margin="8dp"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
@@ -62,6 +63,7 @@
         android:layout_margin="4dp"
         app:layout_constraintTop_toTopOf="@id/sort_text"
         app:layout_constraintStart_toEndOf="@id/up_button"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="@id/sort_text"
         />
 

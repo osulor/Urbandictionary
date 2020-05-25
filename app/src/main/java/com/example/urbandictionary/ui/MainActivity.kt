@@ -1,23 +1,24 @@
 package com.example.urbandictionary.ui
 
-import androidx.appcompat.app.AppCompatActivity
+import android.app.Activity
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.urbandictionary.R
 import com.example.urbandictionary.model.Definition
 import com.example.urbandictionary.network.Webservices
-import com.example.urbandictionary.network.repository.DictionaryRepository
 import com.example.urbandictionary.network.repository.DictionaryRepositoryImpl
 import com.example.urbandictionary.viewmodel.DictionaryViewModel
 import com.example.urbandictionary.viewmodel.viewModelFactory.DictionaryViewModelFactory
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -37,8 +38,10 @@ class MainActivity : AppCompatActivity() {
         observeData()
 
         searchButton.setOnClickListener {
+            hideKeyboard(this)
             val word = searchView.text.toString()
             retrieveData(word)
+            searchView.text.clear()
         }
 
         up_button.setOnClickListener {
@@ -81,6 +84,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun displayProgressbar() {
+
             progressbar.visibility = View.VISIBLE
             wordsRV.visibility = View.GONE
     }
@@ -97,11 +101,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun showSuccessSnackBar() {
-        Snackbar.make(
+      val snackBar =  Snackbar.make(
             wordsRV,
             "Data have successfully been retrieved. ",
             Snackbar.LENGTH_LONG
-        ).show()
+        )
+        snackBar.setActionTextColor(resources.getColor(R.color.snackBarTextColor))
+        snackBar.view.background = resources.getDrawable(R.color.snackBarColor)
+        snackBar.show()
     }
 
     fun sortByMostThumbsUp(definitionList: List<Definition>?){
@@ -123,4 +130,18 @@ class MainActivity : AppCompatActivity() {
         dictionaryAdapter.definitionList.addAll(newDefinitionList!!)
         dictionaryAdapter.notifyDataSetChanged()
     }
+
+    fun hideKeyboard(activity: Activity) {
+        val imm: InputMethodManager =
+            activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        //Find the currently focused view, so we can grab the correct window token from it.
+        var view = activity.currentFocus
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = View(activity)
+        }
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+
+    }
+
 }
