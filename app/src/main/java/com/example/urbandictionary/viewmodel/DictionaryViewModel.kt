@@ -2,6 +2,7 @@ package com.example.urbandictionary.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.urbandictionary.model.Definition
 import com.example.urbandictionary.model.UrbanResponse
 import com.example.urbandictionary.network.repository.DictionaryRepository
 import io.reactivex.disposables.CompositeDisposable
@@ -12,7 +13,7 @@ class DictionaryViewModel(
     private val disposable: CompositeDisposable
 ) : ViewModel(){
 
-     val definitions: MutableLiveData<UrbanResponse> = MutableLiveData()
+     var definitions: MutableLiveData<UrbanResponse> = MutableLiveData()
      val errorMessage: MutableLiveData<String> = MutableLiveData()
      val loadingState = MutableLiveData<LoadingState>()
 
@@ -45,6 +46,7 @@ class DictionaryViewModel(
             })
         )
     }
+
 
     override fun onCleared() {
         disposable.dispose()

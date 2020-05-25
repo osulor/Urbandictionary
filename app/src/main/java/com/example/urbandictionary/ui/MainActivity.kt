@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.urbandictionary.R
+import com.example.urbandictionary.model.Definition
 import com.example.urbandictionary.network.Webservices
 import com.example.urbandictionary.network.repository.DictionaryRepository
 import com.example.urbandictionary.network.repository.DictionaryRepositoryImpl
@@ -38,6 +39,14 @@ class MainActivity : AppCompatActivity() {
         searchButton.setOnClickListener {
             val word = searchView.text.toString()
             retrieveData(word)
+        }
+
+        up_button.setOnClickListener {
+            sortByMostThumbsUp(viewModel.definitions.value?.list)
+        }
+
+        down_button.setOnClickListener {
+            sortByMostThumbsDown(viewModel.definitions.value?.list)
         }
 
     }
@@ -82,6 +91,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun retrieveData(word: String){
+        dictionaryAdapter.definitionList.clear()
         viewModel.getDefinitionFromApi(word)
         showSuccessSnackBar()
     }
@@ -92,5 +102,25 @@ class MainActivity : AppCompatActivity() {
             "Data have successfully been retrieved. ",
             Snackbar.LENGTH_LONG
         ).show()
+    }
+
+    fun sortByMostThumbsUp(definitionList: List<Definition>?){
+        val sortedList = definitionList?.sortedByDescending { definition ->
+            definition.thumbs_up
+        }
+        updateWordList(sortedList)
+    }
+
+    fun sortByMostThumbsDown(definitionList: List<Definition>?){
+        val sortedList = definitionList?.sortedByDescending { definition ->
+            definition.thumbs_down
+        }
+        updateWordList(sortedList)
+    }
+
+    fun updateWordList(newDefinitionList: List<Definition>?) {
+        dictionaryAdapter.definitionList.clear()
+        dictionaryAdapter.definitionList.addAll(newDefinitionList!!)
+        dictionaryAdapter.notifyDataSetChanged()
     }
 }

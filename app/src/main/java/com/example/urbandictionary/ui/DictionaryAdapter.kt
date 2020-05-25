@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.urbandictionary.R
 import com.example.urbandictionary.model.Definition
+import kotlinx.android.synthetic.main.activity_main.view.*
 
 class DictionaryAdapter(val definitionList: MutableList<Definition>): RecyclerView.Adapter<DictionaryViewHolder>(){
 
@@ -19,5 +20,8 @@ class DictionaryAdapter(val definitionList: MutableList<Definition>): RecyclerVi
 
     override fun onBindViewHolder(holder: DictionaryViewHolder, position: Int) {
         holder.bindItem(definitionList[position])
+
     }
+
+
 }
