@@ -7,11 +7,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.urbandictionary.R
 import com.example.urbandictionary.model.Definition
 
-class DictionaryAdapter(private val definitionList: List<Definition>): RecyclerView.Adapter<DictionaryAdapter.DictionaryViewHolder>(){
+class DictionaryAdapter(val definitionList: MutableList<Definition>): RecyclerView.Adapter<DictionaryViewHolder>(){
 
-    inner class  DictionaryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
-
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DictionaryViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.word_item,parent,false)
@@ -21,6 +18,6 @@ class DictionaryAdapter(private val definitionList: List<Definition>): RecyclerV
     override fun getItemCount() = definitionList.size
 
     override fun onBindViewHolder(holder: DictionaryViewHolder, position: Int) {
-        TODO("Not yet implemented")
+        holder.bindItem(definitionList[position])
     }
 }

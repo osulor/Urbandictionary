@@ -12,9 +12,9 @@ class DictionaryViewModel(
     private val disposable: CompositeDisposable
 ) : ViewModel(){
 
-    private val definitions: MutableLiveData<UrbanResponse> = MutableLiveData()
-    private val errorMessage: MutableLiveData<String> = MutableLiveData()
-    private val loadingState = MutableLiveData<LoadingState>()
+     val definitions: MutableLiveData<UrbanResponse> = MutableLiveData()
+     val errorMessage: MutableLiveData<String> = MutableLiveData()
+     val loadingState = MutableLiveData<LoadingState>()
 
     enum class LoadingState {
         LOADING,
