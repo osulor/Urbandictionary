@@ -4,4 +4,6 @@
     <string name="search">Search</string>
     <string name="up">UP</string>
     <string name="down">DOWN</string>
+    <string name="example"> Example:\u0020</string>
+    <string name="written_on">Written on:\u0020</string>
 </resources>

@@ -1,8 +1,9 @@
-package com.example.urbandictionary.ui
+package com.example.urbandictionary.ui.adapter
 
 import android.annotation.SuppressLint
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import com.example.urbandictionary.R
 import com.example.urbandictionary.model.Definition
 import kotlinx.android.synthetic.main.word_item.view.*
 import java.text.SimpleDateFormat
@@ -17,10 +18,9 @@ class DictionaryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
             authorTv.text = definition.author
             thumbs_down_count.text = definition.thumbs_down.toString()
             thumbs_up_count.text = definition.thumbs_up.toString()
-            exampleTv.text = "Example: ".plus(definition.example)
-            dateTv.text = "Written on ".plus(setDate(definition.written_on))
+            exampleTv.text = context.getString(R.string.example).plus(definition.example)
+            dateTv.text = context.getString(R.string.written_on).plus(setDate(definition.written_on))
         }
-
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -29,5 +29,4 @@ class DictionaryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         val formatter = SimpleDateFormat("MM/dd/yyyy")
        return formatter.format(parser.parse(writtenOn))
     }
-
 }

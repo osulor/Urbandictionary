@@ -19,6 +19,7 @@ import com.example.urbandictionary.R
 import com.example.urbandictionary.model.Definition
 import com.example.urbandictionary.network.Webservices
 import com.example.urbandictionary.network.repository.DictionaryRepositoryImpl
+import com.example.urbandictionary.ui.adapter.DictionaryAdapter
 import com.example.urbandictionary.viewmodel.DictionaryViewModel
 import com.example.urbandictionary.viewmodel.viewModelFactory.DictionaryViewModelFactory
 import com.google.android.material.snackbar.Snackbar
@@ -29,7 +30,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var viewModel: DictionaryViewModel
     private lateinit var dictionaryAdapter: DictionaryAdapter
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,12 +45,13 @@ class MainActivity : AppCompatActivity() {
 
         searchButton.setOnClickListener {
             hideKeyboard(this)
-            if (!searchView.text.isNullOrBlank()){
+            if (!searchView.text.isNullOrBlank()) {
                 val word = searchView.text.toString()
                 retrieveData(word)
                 searchView.text.clear()
             } else {
-                Toast.makeText(this,"No word was entered, please enter a word",Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "No word was entered, please enter a word", Toast.LENGTH_LONG)
+                    .show()
             }
         }
 
@@ -63,11 +64,9 @@ class MainActivity : AppCompatActivity() {
             dictionaryAdapter.definitionList.addAll(result.list)
             dictionaryAdapter.notifyDataSetChanged()
         })
-
         viewModel.errorMessage.observe(this, Observer {
             showErrorSnackbar(it)
         })
-
         viewModel.loadingState.observe(this, Observer {
             when (it) {
                 DictionaryViewModel.LoadingState.LOADING -> displayProgressbar()
@@ -84,7 +83,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun setUpRecyclerView() {
         wordsRV.layoutManager = LinearLayoutManager(this)
-        dictionaryAdapter = DictionaryAdapter(mutableListOf())
+        dictionaryAdapter =
+            DictionaryAdapter(
+                mutableListOf()
+            )
         wordsRV.adapter = dictionaryAdapter
         val decorator = DividerItemDecoration(applicationContext, LinearLayoutManager.VERTICAL)
         wordsRV.addItemDecoration(decorator)
@@ -101,7 +103,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun retrieveData(word: String) {
-        if (!hasInternetConnection()){
+        if (!hasInternetConnection()) {
             showErrorSnackbar("No Internet, Please check your connexion ")
         } else {
             dictionaryAdapter.definitionList.clear()
@@ -142,20 +144,20 @@ class MainActivity : AppCompatActivity() {
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
-    private fun showErrorSnackbar(errorMessage: String){
+    private fun showErrorSnackbar(errorMessage: String) {
         val snackBar = Snackbar.make(
             wordsRV,
             errorMessage,
             Snackbar.LENGTH_LONG
         )
-        snackBar.setActionTextColor(resources.getColor(R.color.snackBarTextColor))
+        snackBar.setActionTextColor(resources.getColor(R.color.colorWhite))
         snackBar.view.background = resources.getDrawable(R.color.failSnackBarColor)
         snackBar.duration = 3000
         snackBar.show()
     }
 
-    private fun checkConnectivity(){
-        if (!hasInternetConnection()){
+    private fun checkConnectivity() {
+        if (!hasInternetConnection()) {
             showErrorSnackbar("No Internet, Please check your connexion ")
         }
     }
