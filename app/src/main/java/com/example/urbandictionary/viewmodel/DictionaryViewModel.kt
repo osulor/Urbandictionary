@@ -1,8 +1,16 @@
 package com.example.urbandictionary.viewmodel
 
+import android.app.Application
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.ConnectivityManager.*
+import android.net.NetworkCapabilities.*
+import android.os.Build
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.urbandictionary.model.UrbanResponse
+import com.example.urbandictionary.network.MyApplication
 import com.example.urbandictionary.network.repository.DictionaryRepository
 import io.reactivex.disposables.CompositeDisposable
 import java.net.UnknownHostException

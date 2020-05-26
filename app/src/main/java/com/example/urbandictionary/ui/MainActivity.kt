@@ -1,6 +1,11 @@
 package com.example.urbandictionary.ui
 
 import android.app.Activity
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.ConnectivityManager.*
+import android.net.NetworkCapabilities.*
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -32,48 +37,50 @@ class MainActivity : AppCompatActivity() {
 
         val dictionaryRepository = DictionaryRepositoryImpl(Webservices.instance)
         val viewModelFactory = DictionaryViewModelFactory(dictionaryRepository)
-        viewModel = ViewModelProvider(this,viewModelFactory).get(DictionaryViewModel::class.java)
+        viewModel = ViewModelProvider(this, viewModelFactory).get(DictionaryViewModel::class.java)
 
+        checkConnectivity()
         setUpRecyclerView()
         observeData()
 
         searchButton.setOnClickListener {
             hideKeyboard(this)
-            val word = searchView.text.toString()
-            retrieveData(word)
-            searchView.text.clear()
+            if (!searchView.text.isNullOrBlank()){
+                val word = searchView.text.toString()
+                retrieveData(word)
+                searchView.text.clear()
+            } else {
+                Toast.makeText(this,"No word was entered, please enter a word",Toast.LENGTH_LONG).show()
+            }
         }
 
-        up_button.setOnClickListener {
-            sortByMostThumbsUp(viewModel.definitions.value?.list)
-        }
-
-        down_button.setOnClickListener {
-            sortByMostThumbsDown(viewModel.definitions.value?.list)
-        }
-
+        up_button.setOnClickListener { sortByMostThumbsUp(viewModel.definitions.value?.list) }
+        down_button.setOnClickListener { sortByMostThumbsDown(viewModel.definitions.value?.list) }
     }
 
-    fun observeData(){
-        viewModel.definitions.observe(this, Observer {result ->
+    fun observeData() {
+        viewModel.definitions.observe(this, Observer { result ->
             dictionaryAdapter.definitionList.addAll(result.list)
             dictionaryAdapter.notifyDataSetChanged()
         })
 
         viewModel.errorMessage.observe(this, Observer {
-            Toast.makeText(this,it,Toast.LENGTH_LONG).show()
+            showErrorSnackbar(it)
         })
 
         viewModel.loadingState.observe(this, Observer {
-            when(it) {
+            when (it) {
                 DictionaryViewModel.LoadingState.LOADING -> displayProgressbar()
                 DictionaryViewModel.LoadingState.SUCCESS -> displayList()
-                DictionaryViewModel.LoadingState.ERROR -> Toast.makeText(this,"Error has happened",Toast.LENGTH_LONG).show()
-                else -> Toast.makeText(this,"Another error has happened",Toast.LENGTH_LONG).show()
+                DictionaryViewModel.LoadingState.ERROR -> Toast.makeText(
+                    this,
+                    "Error has occured",
+                    Toast.LENGTH_LONG
+                ).show()
+                else -> Toast.makeText(this, "Another error has happened", Toast.LENGTH_LONG).show()
             }
         })
     }
-
 
     private fun setUpRecyclerView() {
         wordsRV.layoutManager = LinearLayoutManager(this)
@@ -84,9 +91,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun displayProgressbar() {
-
-            progressbar.visibility = View.VISIBLE
-            wordsRV.visibility = View.GONE
+        progressbar.visibility = View.VISIBLE
+        wordsRV.visibility = View.GONE
     }
 
     private fun displayList() {
@@ -94,44 +100,37 @@ class MainActivity : AppCompatActivity() {
         progressbar.visibility = View.GONE
     }
 
-    fun retrieveData(word: String){
-        dictionaryAdapter.definitionList.clear()
-        viewModel.getDefinitionFromApi(word)
-        showSuccessSnackBar()
+    private fun retrieveData(word: String) {
+        if (!hasInternetConnection()){
+            showErrorSnackbar("No Internet, Please check your connexion ")
+        } else {
+            dictionaryAdapter.definitionList.clear()
+            viewModel.getDefinitionFromApi(word)
+
+        }
     }
 
-    fun showSuccessSnackBar() {
-      val snackBar =  Snackbar.make(
-            wordsRV,
-            "Data have successfully been retrieved. ",
-            Snackbar.LENGTH_LONG
-        )
-        snackBar.setActionTextColor(resources.getColor(R.color.snackBarTextColor))
-        snackBar.view.background = resources.getDrawable(R.color.snackBarColor)
-        snackBar.show()
-    }
-
-    fun sortByMostThumbsUp(definitionList: List<Definition>?){
+    private fun sortByMostThumbsUp(definitionList: List<Definition>?) {
         val sortedList = definitionList?.sortedByDescending { definition ->
             definition.thumbs_up
         }
         updateWordList(sortedList)
     }
 
-    fun sortByMostThumbsDown(definitionList: List<Definition>?){
+    private fun sortByMostThumbsDown(definitionList: List<Definition>?) {
         val sortedList = definitionList?.sortedByDescending { definition ->
             definition.thumbs_down
         }
         updateWordList(sortedList)
     }
 
-    fun updateWordList(newDefinitionList: List<Definition>?) {
+    private fun updateWordList(newDefinitionList: List<Definition>?) {
         dictionaryAdapter.definitionList.clear()
         dictionaryAdapter.definitionList.addAll(newDefinitionList!!)
         dictionaryAdapter.notifyDataSetChanged()
     }
 
-    fun hideKeyboard(activity: Activity) {
+    private fun hideKeyboard(activity: Activity) {
         val imm: InputMethodManager =
             activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         //Find the currently focused view, so we can grab the correct window token from it.
@@ -141,7 +140,50 @@ class MainActivity : AppCompatActivity() {
             view = View(activity)
         }
         imm.hideSoftInputFromWindow(view.windowToken, 0)
-
     }
 
+    private fun showErrorSnackbar(errorMessage: String){
+        val snackBar = Snackbar.make(
+            wordsRV,
+            errorMessage,
+            Snackbar.LENGTH_LONG
+        )
+        snackBar.setActionTextColor(resources.getColor(R.color.snackBarTextColor))
+        snackBar.view.background = resources.getDrawable(R.color.failSnackBarColor)
+        snackBar.duration = 3000
+        snackBar.show()
+    }
+
+    private fun checkConnectivity(){
+        if (!hasInternetConnection()){
+            showErrorSnackbar("No Internet, Please check your connexion ")
+        }
+    }
+
+    private fun hasInternetConnection(): Boolean {
+        val connectivityManager = application.getSystemService(
+            Context.CONNECTIVITY_SERVICE
+        ) as ConnectivityManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val activeNetwork = connectivityManager.activeNetwork ?: return false
+            val capabilities =
+                connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
+            return when {
+                capabilities.hasTransport(TRANSPORT_WIFI) -> true
+                capabilities.hasTransport(TRANSPORT_CELLULAR) -> true
+                capabilities.hasTransport(TRANSPORT_ETHERNET) -> true
+                else -> false
+            }
+        } else {
+            connectivityManager.activeNetworkInfo?.run {
+                return when (type) {
+                    TYPE_WIFI -> true
+                    TYPE_MOBILE -> true
+                    TYPE_ETHERNET -> true
+                    else -> false
+                }
+            }
+        }
+        return false
+    }
 }
