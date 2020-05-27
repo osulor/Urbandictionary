@@ -14,7 +14,7 @@ import retrofit2.http.Query
 import java.util.concurrent.TimeUnit
 
 interface Webservices {
-
+    // Provide retrofit interface through DI
     companion object {
         val instance: Webservices by lazy {
             val logging = HttpLoggingInterceptor()

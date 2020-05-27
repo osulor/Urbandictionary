@@ -16,7 +16,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.urbandictionary.R
-import com.example.urbandictionary.model.Definition
 import com.example.urbandictionary.network.Webservices
 import com.example.urbandictionary.network.repository.DictionaryRepositoryImpl
 import com.example.urbandictionary.ui.adapter.DictionaryAdapter
@@ -25,9 +24,9 @@ import com.example.urbandictionary.viewmodel.viewModelFactory.DictionaryViewMode
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 
-
 class MainActivity : AppCompatActivity() {
 
+    // Use DI to inject viewmodels into activity, repository into viewmodels, api service into repository
     private lateinit var viewModel: DictionaryViewModel
     private lateinit var dictionaryAdapter: DictionaryAdapter
 
@@ -55,18 +54,19 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        up_button.setOnClickListener { sortByMostThumbsUp(viewModel.definitions.value?.list) }
-        down_button.setOnClickListener { sortByMostThumbsDown(viewModel.definitions.value?.list) }
+        up_button.setOnClickListener { dictionaryAdapter.sortByMostThumbsUp(viewModel.definitions.value?.list) }
+        down_button.setOnClickListener { dictionaryAdapter.sortByMostThumbsDown(viewModel.definitions.value?.list) }
     }
 
     fun observeData() {
         viewModel.definitions.observe(this, Observer { result ->
-            dictionaryAdapter.definitionList.addAll(result.list)
-            dictionaryAdapter.notifyDataSetChanged()
+            dictionaryAdapter.updateDefinitionsList(result.list)
         })
+
         viewModel.errorMessage.observe(this, Observer {
             showErrorSnackbar(it)
         })
+
         viewModel.loadingState.observe(this, Observer {
             when (it) {
                 DictionaryViewModel.LoadingState.LOADING -> displayProgressbar()
@@ -104,32 +104,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun retrieveData(word: String) {
         if (!hasInternetConnection()) {
-            showErrorSnackbar("No Internet, Please check your connexion ")
+            showErrorSnackbar(getString(R.string.no_internet))
         } else {
             dictionaryAdapter.definitionList.clear()
             viewModel.getDefinitionFromApi(word)
-
         }
-    }
-
-    private fun sortByMostThumbsUp(definitionList: List<Definition>?) {
-        val sortedList = definitionList?.sortedByDescending { definition ->
-            definition.thumbs_up
-        }
-        updateWordList(sortedList)
-    }
-
-    private fun sortByMostThumbsDown(definitionList: List<Definition>?) {
-        val sortedList = definitionList?.sortedByDescending { definition ->
-            definition.thumbs_down
-        }
-        updateWordList(sortedList)
-    }
-
-    private fun updateWordList(newDefinitionList: List<Definition>?) {
-        dictionaryAdapter.definitionList.clear()
-        dictionaryAdapter.definitionList.addAll(newDefinitionList!!)
-        dictionaryAdapter.notifyDataSetChanged()
     }
 
     private fun hideKeyboard(activity: Activity) {
@@ -158,10 +137,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkConnectivity() {
         if (!hasInternetConnection()) {
-            showErrorSnackbar("No Internet, Please check your connexion ")
+            showErrorSnackbar("No Internet, Please check your connexion")
         }
     }
 
+    // Extract connectivity logic into an util class that receives the application context
     private fun hasInternetConnection(): Boolean {
         val connectivityManager = application.getSystemService(
             Context.CONNECTIVITY_SERVICE

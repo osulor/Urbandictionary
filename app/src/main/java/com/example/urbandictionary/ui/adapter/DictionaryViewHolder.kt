@@ -5,13 +5,12 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.example.urbandictionary.R
 import com.example.urbandictionary.model.Definition
+import com.example.urbandictionary.utils.setDate
 import kotlinx.android.synthetic.main.word_item.view.*
 import java.text.SimpleDateFormat
 
 class DictionaryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-
     fun bindItem(definition: Definition){
-
         itemView.apply {
             word_text.text = definition.word
             word_meaning.text = definition.definition
@@ -21,12 +20,5 @@ class DictionaryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
             exampleTv.text = context.getString(R.string.example).plus(definition.example)
             dateTv.text = context.getString(R.string.written_on).plus(setDate(definition.written_on))
         }
-    }
-
-    @SuppressLint("SimpleDateFormat")
-    fun setDate(writtenOn: String?): String{
-        val parser = SimpleDateFormat("yyyy-MM-dd")
-        val formatter = SimpleDateFormat("MM/dd/yyyy")
-       return formatter.format(parser.parse(writtenOn))
     }
 }

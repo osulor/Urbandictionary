@@ -54,7 +54,7 @@ class DictionaryViewModelTest {
         every { dictionaryRepository.getDefinition("dummyWord") } returns Single.just(urbanResponse)
         viewModel.getDefinitionFromApi("dummyWord")
 
-        assertEquals(urbanResponse,viewModel.definitions.value)
+        assertEquals(urbanResponse,viewModel.definitionsMutableLiveData.value)
         assertEquals(null,viewModel.errorMessage.value)
         assertEquals(DictionaryViewModel.LoadingState.SUCCESS,viewModel.loadingState.value)
     }
@@ -68,34 +68,34 @@ class DictionaryViewModelTest {
         )
 
         viewModel.getDefinitionFromApi("dummyWord")
-        assertEquals(null,viewModel.definitions.value)
+        assertEquals(null,viewModel.definitionsMutableLiveData.value)
         assertEquals("Word Not Found",viewModel.errorMessage.value)
         assertEquals(DictionaryViewModel.LoadingState.ERROR,viewModel.loadingState.value)
 
     }
 
     @Test
-    fun getPicsShowsNetworkError_WhenRepositoryReturnsUnknownHostException(){
+    fun getDefinitionShowsNetworkError_WhenRepositoryReturnsUnknownHostException(){
         every { dictionaryRepository.getDefinition("dummyWord") } returns Single.error(
             UnknownHostException()
         )
         viewModel.getDefinitionFromApi("dummyWord")
-        assertEquals(null,viewModel.definitions.value)
+        assertEquals(null,viewModel.definitionsMutableLiveData.value)
         assertEquals("Network Error Occurred",viewModel.errorMessage.value)
         assertEquals(DictionaryViewModel.LoadingState.ERROR,viewModel.loadingState.value)
     }
 
     @Test
-    fun getPicsShowLocalizedError_WhenRepositoryReturnsOthersTypeOfException(){
+    fun getDefinitionShowLocalizedError_WhenRepositoryReturnsOthersTypeOfException(){
         every { dictionaryRepository.getDefinition("dummyWord") } returns Single.error(RuntimeException("This is a custom exception"))
         viewModel.getDefinitionFromApi("dummyWord")
-        assertEquals(null,viewModel.definitions.value)
+        assertEquals(null,viewModel.definitionsMutableLiveData.value)
         assertEquals("This is a custom exception",viewModel.errorMessage.value)
         assertEquals(DictionaryViewModel.LoadingState.ERROR,viewModel.loadingState.value)
     }
 
     @After
     fun tearDown() {
-
+        compositeDisposable.clear()
     }
 }

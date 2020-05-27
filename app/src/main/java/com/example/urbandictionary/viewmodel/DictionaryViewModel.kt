@@ -1,5 +1,6 @@
 package com.example.urbandictionary.viewmodel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.urbandictionary.model.UrbanResponse
@@ -7,14 +8,21 @@ import com.example.urbandictionary.network.repository.DictionaryRepository
 import io.reactivex.disposables.CompositeDisposable
 import java.net.UnknownHostException
 
-class DictionaryViewModel(
-    private val dictionaryRepository: DictionaryRepository,
-    private val disposable: CompositeDisposable
-) : ViewModel() {
+class DictionaryViewModel(private val dictionaryRepository: DictionaryRepository) : ViewModel() {
 
-    var definitions: MutableLiveData<UrbanResponse> = MutableLiveData()
-    val errorMessage: MutableLiveData<String> = MutableLiveData()
-    val loadingState = MutableLiveData<LoadingState>()
+    private val disposable: CompositeDisposable = CompositeDisposable()
+
+    private var definitionsMutableLiveData: MutableLiveData<UrbanResponse> = MutableLiveData()
+    val definitions: LiveData<UrbanResponse>
+        get() = definitionsMutableLiveData
+
+    private var errorMessageMutableLiveData: MutableLiveData<String> = MutableLiveData()
+    val errorMessage: LiveData<String>
+        get() = errorMessageMutableLiveData
+
+    private var loadingStateMutableLiveData = MutableLiveData<LoadingState>()
+    val loadingState : LiveData<LoadingState>
+        get() = loadingStateMutableLiveData
 
     enum class LoadingState {
         LOADING,
@@ -23,25 +31,22 @@ class DictionaryViewModel(
     }
 
     fun getDefinitionFromApi(word: String) {
-        loadingState.value = LoadingState.LOADING
+        loadingStateMutableLiveData.value = LoadingState.LOADING
         disposable.add(
             dictionaryRepository.getDefinition(word).subscribe({ result ->
-
                 if (result.list.isEmpty()) {
-                    errorMessage.value = "Word Not Found"
-                    loadingState.value = LoadingState.ERROR
+                    errorMessageMutableLiveData.value = "Word Not Found"
+                    loadingStateMutableLiveData.value = LoadingState.ERROR
                 } else {
-                    definitions.value = result
-                    loadingState.value = LoadingState.SUCCESS
+                    definitionsMutableLiveData.value = result
+                    loadingStateMutableLiveData.value = LoadingState.SUCCESS
                 }
-
             }, {
                 when (it) {
-                    is UnknownHostException -> errorMessage.value = "Network Error Occurred"
-                    else -> errorMessage.value = it.localizedMessage
+                    is UnknownHostException -> errorMessageMutableLiveData.value = "Network Error Occurred"
+                    else -> errorMessageMutableLiveData.value = it.localizedMessage
                 }
-
-                loadingState.value = LoadingState.ERROR
+                loadingStateMutableLiveData.value = LoadingState.ERROR
             })
         )
     }

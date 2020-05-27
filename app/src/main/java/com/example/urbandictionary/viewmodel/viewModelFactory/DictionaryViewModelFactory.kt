@@ -8,6 +8,6 @@ import io.reactivex.disposables.CompositeDisposable
 
 class DictionaryViewModelFactory(private val dictionaryRepository: DictionaryRepository): ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        return DictionaryViewModel(dictionaryRepository, CompositeDisposable()) as T
+        return DictionaryViewModel(dictionaryRepository) as T
     }
 }
