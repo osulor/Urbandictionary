@@ -8,7 +8,6 @@ import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.reactivex.Single
-import io.reactivex.disposables.CompositeDisposable
 import org.junit.After
 import org.junit.Before
 
@@ -30,14 +29,14 @@ class DictionaryViewModelTest {
     lateinit var viewModel: DictionaryViewModel
     @MockK
     lateinit var dictionaryRepository: DictionaryRepository
-    @MockK
-    lateinit var compositeDisposable: CompositeDisposable
+//    @MockK
+//    lateinit var compositeDisposable: CompositeDisposable
 
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
-        viewModel = DictionaryViewModel(dictionaryRepository,compositeDisposable)
-        every { compositeDisposable.add(any()) } returns true
+        viewModel = DictionaryViewModel(dictionaryRepository)
+        //every { compositeDisposable.add(any()) } returns true
     }
 
     @Test
@@ -54,7 +53,7 @@ class DictionaryViewModelTest {
         every { dictionaryRepository.getDefinition("dummyWord") } returns Single.just(urbanResponse)
         viewModel.getDefinitionFromApi("dummyWord")
 
-        assertEquals(urbanResponse,viewModel.definitionsMutableLiveData.value)
+        assertEquals(urbanResponse,viewModel.definitions.value)
         assertEquals(null,viewModel.errorMessage.value)
         assertEquals(DictionaryViewModel.LoadingState.SUCCESS,viewModel.loadingState.value)
     }
@@ -68,7 +67,7 @@ class DictionaryViewModelTest {
         )
 
         viewModel.getDefinitionFromApi("dummyWord")
-        assertEquals(null,viewModel.definitionsMutableLiveData.value)
+        assertEquals(null,viewModel.definitions.value)
         assertEquals("Word Not Found",viewModel.errorMessage.value)
         assertEquals(DictionaryViewModel.LoadingState.ERROR,viewModel.loadingState.value)
 
@@ -80,7 +79,7 @@ class DictionaryViewModelTest {
             UnknownHostException()
         )
         viewModel.getDefinitionFromApi("dummyWord")
-        assertEquals(null,viewModel.definitionsMutableLiveData.value)
+        assertEquals(null,viewModel.definitions.value)
         assertEquals("Network Error Occurred",viewModel.errorMessage.value)
         assertEquals(DictionaryViewModel.LoadingState.ERROR,viewModel.loadingState.value)
     }
@@ -89,13 +88,13 @@ class DictionaryViewModelTest {
     fun getDefinitionShowLocalizedError_WhenRepositoryReturnsOthersTypeOfException(){
         every { dictionaryRepository.getDefinition("dummyWord") } returns Single.error(RuntimeException("This is a custom exception"))
         viewModel.getDefinitionFromApi("dummyWord")
-        assertEquals(null,viewModel.definitionsMutableLiveData.value)
+        assertEquals(null,viewModel.definitions.value)
         assertEquals("This is a custom exception",viewModel.errorMessage.value)
         assertEquals(DictionaryViewModel.LoadingState.ERROR,viewModel.loadingState.value)
     }
 
     @After
     fun tearDown() {
-        compositeDisposable.clear()
+       // compositeDisposable.clear()
     }
 }

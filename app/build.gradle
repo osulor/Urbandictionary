@@ -68,8 +68,11 @@ dependencies {
     testImplementation 'android.arch.core:core-testing:1.1.1'
     testImplementation "io.mockk:mockk:1.9.3.kotlin12"
 
+    //Koin AndroidX Scope feature
+    implementation "org.koin:koin-androidx-scope:2.1.5"
 
-
+    //Koin AndroidX ViewModel feature
+    implementation "org.koin:koin-androidx-viewmodel:2.1.5"
 
     testImplementation 'junit:junit:4.13'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'

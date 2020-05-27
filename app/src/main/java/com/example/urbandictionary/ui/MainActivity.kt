@@ -12,31 +12,23 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.urbandictionary.R
-import com.example.urbandictionary.network.Webservices
-import com.example.urbandictionary.network.repository.DictionaryRepositoryImpl
 import com.example.urbandictionary.ui.adapter.DictionaryAdapter
 import com.example.urbandictionary.viewmodel.DictionaryViewModel
-import com.example.urbandictionary.viewmodel.viewModelFactory.DictionaryViewModelFactory
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
 
-    // Use DI to inject viewmodels into activity, repository into viewmodels, api service into repository
-    private lateinit var viewModel: DictionaryViewModel
     private lateinit var dictionaryAdapter: DictionaryAdapter
+    private val viewModel: DictionaryViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        val dictionaryRepository = DictionaryRepositoryImpl(Webservices.instance)
-        val viewModelFactory = DictionaryViewModelFactory(dictionaryRepository)
-        viewModel = ViewModelProvider(this, viewModelFactory).get(DictionaryViewModel::class.java)
 
         checkConnectivity()
         setUpRecyclerView()
