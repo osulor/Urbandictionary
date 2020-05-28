@@ -23,6 +23,14 @@ android {
         }
     }
 
+    flavorDimensions "version"
+    productFlavors {
+        prod {
+        }
+        mock {
+        }
+    }
+
 }
 
 dependencies {
@@ -68,13 +76,21 @@ dependencies {
     testImplementation 'android.arch.core:core-testing:1.1.1'
     testImplementation "io.mockk:mockk:1.9.3.kotlin12"
 
-    //Koin AndroidX Scope feature
-    implementation "org.koin:koin-androidx-scope:2.1.5"
+    // Koin for Android
+    implementation "org.koin:koin-android:1.0.2"
+    implementation "org.koin:koin-androidx-viewmodel:1.0.2"
+    implementation "org.koin:koin-core:1.0.2"
 
-    //Koin AndroidX ViewModel feature
-    implementation "org.koin:koin-androidx-viewmodel:2.1.5"
+    implementation "org.koin:koin-android-architecture:0.9.3"
+    testImplementation "org.koin:koin-test:1.0.2"
+    testImplementation"io.kotest:kotest-runner-junit5:4.0.5"
+    testImplementation"io.kotest:kotest-extensions-koin:4.0.5"
+
+    androidTestImplementation 'androidx.test:runner:1.2.0'
 
     testImplementation 'junit:junit:4.13'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test:rules:1.2.0'
 }

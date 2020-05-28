@@ -1,13 +1,11 @@
 package com.example.urbandictionary.ui.adapter
 
-import android.annotation.SuppressLint
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.example.urbandictionary.R
 import com.example.urbandictionary.model.Definition
 import com.example.urbandictionary.utils.setDate
 import kotlinx.android.synthetic.main.word_item.view.*
-import java.text.SimpleDateFormat
 
 class DictionaryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
     fun bindItem(definition: Definition){

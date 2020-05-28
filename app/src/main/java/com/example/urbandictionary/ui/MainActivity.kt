@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
                 retrieveData(word)
                 searchView.text.clear()
             } else {
-                Toast.makeText(this, "No word was entered, please enter a word", Toast.LENGTH_LONG)
+                Toast.makeText(this, getString(R.string.no_word_entered), Toast.LENGTH_LONG)
                     .show()
             }
         }
@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
         down_button.setOnClickListener { dictionaryAdapter.sortByMostThumbsDown(viewModel.definitions.value?.list) }
     }
 
-    fun observeData() {
+     fun observeData() {
         viewModel.definitions.observe(this, Observer { result ->
             dictionaryAdapter.updateDefinitionsList(result.list)
         })
@@ -65,10 +65,10 @@ class MainActivity : AppCompatActivity() {
                 DictionaryViewModel.LoadingState.SUCCESS -> displayList()
                 DictionaryViewModel.LoadingState.ERROR -> Toast.makeText(
                     this,
-                    "Error has occured",
+                    getString(R.string.error_ocurred),
                     Toast.LENGTH_LONG
                 ).show()
-                else -> Toast.makeText(this, "Another error has happened", Toast.LENGTH_LONG).show()
+                else -> Toast.makeText(this, getString(R.string.another_error), Toast.LENGTH_LONG).show()
             }
         })
     }
@@ -129,11 +129,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkConnectivity() {
         if (!hasInternetConnection()) {
-            showErrorSnackbar("No Internet, Please check your connexion")
+            showErrorSnackbar(getString(R.string.no_internet))
         }
     }
 
-    // Extract connectivity logic into an util class that receives the application context
     private fun hasInternetConnection(): Boolean {
         val connectivityManager = application.getSystemService(
             Context.CONNECTIVITY_SERVICE

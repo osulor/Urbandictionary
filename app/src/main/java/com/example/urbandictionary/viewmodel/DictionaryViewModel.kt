@@ -55,5 +55,4 @@ class DictionaryViewModel(private val dictionaryRepository: DictionaryRepository
         disposable.dispose()
         super.onCleared()
     }
-
 }

@@ -7,4 +7,10 @@
     <string name="example"> Example:\u0020</string>
     <string name="written_on">Written on:\u0020</string>
     <string name="no_internet">No Internet, Please check your connection</string>
+    <string name="another_error">Another error has happened</string>
+    <string name="error_ocurred">Error has occured</string>
+    <string name="BASE_URL">https://mashape-community-urban-dictionary.p.rapidapi.com/</string>
+    <string name="API_KEY">bb9c488427msh8a51eb8922c0ae0p17d8dejsne561c5ce0760</string>
+    <string name="HOST">mashape-community-urban-dictionary.p.rapidapi.com</string>
+    <string name="no_word_entered">No word was entered, please enter a word</string>
 </resources>
