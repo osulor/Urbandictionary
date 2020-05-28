@@ -13,7 +13,7 @@ import org.junit.Test
 import java.net.UnknownHostException
 
 
-open class DictionaryViewModelTest : BaseTest() {
+class DictionaryViewModelTest : BaseTest() {
 
     lateinit var viewModel: DictionaryViewModel
     @MockK
